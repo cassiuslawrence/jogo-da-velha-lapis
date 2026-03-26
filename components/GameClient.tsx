@@ -140,8 +140,8 @@ export default function GameClient() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex flex-1 items-center justify-center p-3 sm:p-6">
-        <div className="flex flex-col items-center gap-3 sm:gap-6">
+      <main className="flex flex-1 items-center justify-start pt-5 px-3 pb-3 sm:justify-center sm:p-6">
+        <div className="flex flex-col items-center gap-2 sm:gap-6">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-wide text-pencil">Jogo da Velha</h1>
           <ScoreBoard score={state.score} />
           <Board
