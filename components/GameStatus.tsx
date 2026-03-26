@@ -21,11 +21,11 @@ export default function GameStatus({ currentPlayer, winner, isDraw, onNewGame }:
   const gameOver = !!winner || isDraw
 
   return (
-    <div className="flex flex-col items-center gap-4">
+    <div className="flex flex-col items-center gap-3 sm:gap-4">
       <p
         role="status"
         aria-live="polite"
-        className="text-2xl font-semibold text-pencil"
+        className="text-xl sm:text-2xl font-semibold text-pencil"
       >
         {message}
       </p>

@@ -25,6 +25,7 @@ interface GameState {
 type GameAction =
   | { type: 'PLAY_CELL'; index: number }
   | { type: 'NEW_GAME' }
+  | { type: 'RESET_ALL' }
   | { type: 'LOAD_HISTORY'; history: HistoryEntry[] }
 
 const initialState: GameState = {
@@ -91,6 +92,8 @@ function gameReducer(state: GameState, action: GameAction): GameState {
         history: newHistory,
       }
     }
+    case 'RESET_ALL':
+      return { ...initialState, nextStarter: 'X' }
     case 'LOAD_HISTORY':
       return { ...state, history: action.history }
     default:
@@ -101,6 +104,13 @@ function gameReducer(state: GameState, action: GameAction): GameState {
 export default function GameClient() {
   const [state, dispatch] = useReducer(gameReducer, initialState)
   const [hydrated, setHydrated] = useState(false)
+  const [confirming, setConfirming] = useState(false)
+
+  const handleReset = () => {
+    dispatch({ type: 'RESET_ALL' })
+    try { sessionStorage.removeItem(SESSION_KEY) } catch { /* ignore */ }
+    setConfirming(false)
+  }
 
   // Load history from sessionStorage on mount
   useEffect(() => {
@@ -130,9 +140,9 @@ export default function GameClient() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex flex-1 items-center justify-center p-6">
-        <div className="flex flex-col items-center gap-6">
-          <h1 className="text-4xl font-bold tracking-wide text-pencil">Jogo da Velha</h1>
+      <main className="flex flex-1 items-center justify-center p-3 sm:p-6">
+        <div className="flex flex-col items-center gap-3 sm:gap-6">
+          <h1 className="text-3xl sm:text-4xl font-bold tracking-wide text-pencil">Jogo da Velha</h1>
           <ScoreBoard score={state.score} />
           <Board
             board={state.board}
@@ -146,6 +156,26 @@ export default function GameClient() {
             isDraw={state.isDraw}
             onNewGame={() => dispatch({ type: 'NEW_GAME' })}
           />
+
+          {/* Reset */}
+          <div className="flex flex-col items-center gap-2 pt-1">
+            {!confirming ? (
+              <button
+                onClick={() => setConfirming(true)}
+                className="text-sm text-pencil-light opacity-50 hover:opacity-90 transition-opacity underline underline-offset-2"
+              >
+                Reiniciar tudo
+              </button>
+            ) : (
+              <div className="flex flex-col items-center gap-2">
+                <span className="text-sm text-pencil-light">Apagar placar e histórico?</span>
+                <div className="flex gap-4">
+                  <button onClick={handleReset} className="sketch-button text-base">Sim</button>
+                  <button onClick={() => setConfirming(false)} className="sketch-button text-base">Não</button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
       </main>
       <GameHistory history={state.history} />

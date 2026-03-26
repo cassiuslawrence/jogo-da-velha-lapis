@@ -76,8 +76,8 @@ export default function GameHistory({ history }: GameHistoryProps) {
 
   return (
     <div className="w-full border-t border-[#c8c0b0]">
-      <div className="px-6 py-4">
-        <p className="text-sm text-pencil-light mb-3">Jogos recentes</p>
+      <div className="px-3 sm:px-6 py-2 sm:py-4">
+        <p className="text-sm text-pencil-light mb-2 sm:mb-3">Jogos recentes</p>
 
         <div className="relative flex items-center gap-2">
           {/* Left arrow */}
@@ -95,7 +95,7 @@ export default function GameHistory({ history }: GameHistoryProps) {
           {/* Scrollable strip */}
           <div
             ref={scrollRef}
-            className="flex gap-5 overflow-x-auto pb-1 min-w-0 flex-1 select-none"
+            className="flex gap-3 sm:gap-5 overflow-x-auto pb-1 min-w-0 flex-1 select-none"
             style={{
               scrollbarWidth: 'none',
               cursor: 'grab',
