@@ -7,6 +7,7 @@ import ScoreBoard from './ScoreBoard'
 import Board from './Board'
 import GameStatus from './GameStatus'
 import GameHistory from './GameHistory'
+import { playPencilSound } from '@/lib/sounds'
 
 const SESSION_KEY = 'jdv-game-history'
 const MAX_HISTORY = 10
@@ -105,6 +106,7 @@ export default function GameClient() {
   const [state, dispatch] = useReducer(gameReducer, initialState)
   const [hydrated, setHydrated] = useState(false)
   const [confirming, setConfirming] = useState(false)
+  const [soundEnabled, setSoundEnabled] = useState(true)
 
   const handleReset = () => {
     dispatch({ type: 'RESET_ALL' })
@@ -140,14 +142,63 @@ export default function GameClient() {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <main className="flex flex-1 items-start justify-center pt-5 px-3 pb-3 sm:items-center sm:p-6">
+
+      {/* Top bar — reset (left) and sound toggle (right) */}
+      <div className="flex justify-between items-start px-3 pt-3 sm:px-5 sm:pt-4">
+
+        {/* Reiniciar tudo — top left */}
+        <div className="flex flex-col gap-1.5">
+          {!confirming ? (
+            <button
+              onClick={() => setConfirming(true)}
+              className="text-sm text-pencil-light opacity-50 hover:opacity-90 transition-opacity underline underline-offset-2"
+            >
+              Reiniciar tudo
+            </button>
+          ) : (
+            <div className="flex flex-col gap-1.5">
+              <span className="text-sm text-pencil-light">Apagar tudo?</span>
+              <div className="flex gap-3">
+                <button onClick={handleReset} className="sketch-button text-sm">Sim</button>
+                <button onClick={() => setConfirming(false)} className="sketch-button text-sm">Não</button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Som — top right */}
+        <button
+          onClick={() => setSoundEnabled(e => !e)}
+          aria-label={soundEnabled ? 'Desativar som' : 'Ativar som'}
+          className="opacity-50 hover:opacity-90 transition-opacity"
+        >
+          {soundEnabled ? (
+            <svg viewBox="0 0 22 22" fill="none" className="w-5 h-5" aria-hidden="true">
+              <path d="M3,8 L7,8 L12,4.5 L12,17.5 L7,14 L3,14 Z" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M15,9 C16.5,10 16.5,12 15,13" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+            </svg>
+          ) : (
+            <svg viewBox="0 0 22 22" fill="none" className="w-5 h-5" aria-hidden="true">
+              <path d="M3,8 L7,8 L12,4.5 L12,17.5 L7,14 L3,14 Z" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+              <path d="M15,9 L18,13" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" />
+              <path d="M18,9 L15,13" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" />
+            </svg>
+          )}
+        </button>
+      </div>
+
+      <main className="flex flex-1 items-start justify-center pt-2 px-3 pb-3 sm:items-center sm:p-6">
         <div className="flex flex-col items-center gap-2 sm:gap-6">
           <h1 className="text-3xl sm:text-4xl font-bold tracking-wide text-pencil">Jogo da Velha</h1>
           <ScoreBoard score={state.score} />
           <Board
             board={state.board}
             winLine={state.winLine}
-            onCellClick={(index) => dispatch({ type: 'PLAY_CELL', index })}
+            onCellClick={(index) => {
+              if (state.board[index] || state.winner || state.isDraw) return
+              if (soundEnabled) playPencilSound(state.currentPlayer)
+              dispatch({ type: 'PLAY_CELL', index })
+            }}
             disabled={gameOver}
           />
           <GameStatus
@@ -156,28 +207,9 @@ export default function GameClient() {
             isDraw={state.isDraw}
             onNewGame={() => dispatch({ type: 'NEW_GAME' })}
           />
-
-          {/* Reset */}
-          <div className="flex flex-col items-center gap-2 pt-1">
-            {!confirming ? (
-              <button
-                onClick={() => setConfirming(true)}
-                className="text-sm text-pencil-light opacity-50 hover:opacity-90 transition-opacity underline underline-offset-2"
-              >
-                Reiniciar tudo
-              </button>
-            ) : (
-              <div className="flex flex-col items-center gap-2">
-                <span className="text-sm text-pencil-light">Apagar placar e histórico?</span>
-                <div className="flex gap-4">
-                  <button onClick={handleReset} className="sketch-button text-base">Sim</button>
-                  <button onClick={() => setConfirming(false)} className="sketch-button text-base">Não</button>
-                </div>
-              </div>
-            )}
-          </div>
         </div>
       </main>
+
       <GameHistory history={state.history} />
     </div>
   )
