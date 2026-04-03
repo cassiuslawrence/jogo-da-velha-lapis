@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'com.mais1app.jogodavelha',
-  appName: 'Jogo da Velha',
+  appName: 'Jogo da Velha Clássico',
   webDir: 'out'
 };
 
