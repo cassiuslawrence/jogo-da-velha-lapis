@@ -13,6 +13,7 @@
 body {
   font-family: var(--font-handwritten), cursive;
   background-color: #f5f0e8;
+  padding-top: env(safe-area-inset-top, 0px);
   color: #2a2a2a;
   background-image:
     repeating-linear-gradient(

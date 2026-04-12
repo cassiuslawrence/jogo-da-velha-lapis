@@ -7,6 +7,7 @@ import ScoreBoard from './ScoreBoard'
 import Board from './Board'
 import GameStatus from './GameStatus'
 import GameHistory from './GameHistory'
+import AboutModal from './AboutModal'
 import { playPencilSound } from '@/lib/sounds'
 
 const SESSION_KEY = 'jdv-game-history'
@@ -107,6 +108,7 @@ export default function GameClient() {
   const [hydrated, setHydrated] = useState(false)
   const [confirming, setConfirming] = useState(false)
   const [soundEnabled, setSoundEnabled] = useState(true)
+  const [aboutOpen, setAboutOpen] = useState(false)
 
   const handleReset = () => {
     dispatch({ type: 'RESET_ALL' })
@@ -166,25 +168,43 @@ export default function GameClient() {
           )}
         </div>
 
-        {/* Som — top right */}
-        <button
-          onClick={() => setSoundEnabled(e => !e)}
-          aria-label={soundEnabled ? 'Desativar som' : 'Ativar som'}
-          className="opacity-50 hover:opacity-90 transition-opacity"
-        >
-          {soundEnabled ? (
+        {/* Top right — mais (···) e som */}
+        <div className="flex items-center gap-3">
+
+          {/* Mais — abre o sheet Sobre / Ajustes */}
+          <button
+            onClick={() => setAboutOpen(true)}
+            aria-label="Sobre e ajustes"
+            className="opacity-50 hover:opacity-90 transition-opacity"
+          >
             <svg viewBox="0 0 22 22" fill="none" className="w-5 h-5" aria-hidden="true">
-              <path d="M3,8 L7,8 L12,4.5 L12,17.5 L7,14 L3,14 Z" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M15,9 C16.5,10 16.5,12 15,13" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+              <circle cx="5"  cy="11" r="1.5" fill="#4a4a4a" />
+              <circle cx="11" cy="11" r="1.5" fill="#4a4a4a" />
+              <circle cx="17" cy="11" r="1.5" fill="#4a4a4a" />
             </svg>
-          ) : (
-            <svg viewBox="0 0 22 22" fill="none" className="w-5 h-5" aria-hidden="true">
-              <path d="M3,8 L7,8 L12,4.5 L12,17.5 L7,14 L3,14 Z" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M15,9 L18,13" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" />
-              <path d="M18,9 L15,13" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" />
-            </svg>
-          )}
-        </button>
+          </button>
+
+          {/* Som — inalterado */}
+          <button
+            onClick={() => setSoundEnabled(e => !e)}
+            aria-label={soundEnabled ? 'Desativar som' : 'Ativar som'}
+            className="opacity-50 hover:opacity-90 transition-opacity"
+          >
+            {soundEnabled ? (
+              <svg viewBox="0 0 22 22" fill="none" className="w-5 h-5" aria-hidden="true">
+                <path d="M3,8 L7,8 L12,4.5 L12,17.5 L7,14 L3,14 Z" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M15,9 C16.5,10 16.5,12 15,13" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" fill="none" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 22 22" fill="none" className="w-5 h-5" aria-hidden="true">
+                <path d="M3,8 L7,8 L12,4.5 L12,17.5 L7,14 L3,14 Z" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
+                <path d="M15,9 L18,13" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" />
+                <path d="M18,9 L15,13" stroke="#4a4a4a" strokeWidth="1.8" strokeLinecap="round" />
+              </svg>
+            )}
+          </button>
+
+        </div>
       </div>
 
       <main className="flex flex-1 items-start justify-center pt-2 px-3 pb-3 sm:items-center sm:p-6">
@@ -211,6 +231,13 @@ export default function GameClient() {
       </main>
 
       <GameHistory history={state.history} />
+
+      <AboutModal
+        isOpen={aboutOpen}
+        onClose={() => setAboutOpen(false)}
+        soundEnabled={soundEnabled}
+        onSoundToggle={() => setSoundEnabled(e => !e)}
+      />
     </div>
   )
 }
